@@ -43,5 +43,14 @@
     "link": "https://a.co/d/7DifGfH",
     "price": "20.99",
     "category": "rabbit"
+  },
+  {
+    "id": 1755642551139,
+    "image": "https://m.media-amazon.com/images/I/71cXPbNljSL._AC_SX679_.jpg",
+    "date": "2025-08-19",
+    "description": "Mini PC For DMA",
+    "link": "https://a.co/d/jfPdQAO",
+    "price": "169.00",
+    "category": "dma"
   }
 ]
