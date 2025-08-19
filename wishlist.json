@@ -70,5 +70,14 @@
     "link": "https://a.co/d/bKizx7P",
     "price": "109.99",
     "category": "furniture"
+  },
+  {
+    "id": 1755645533041,
+    "image": "https://m.media-amazon.com/images/I/61nq7N0igEL._AC_SX679_.jpg",
+    "date": "2025-08-19",
+    "description": "nvme ssd\nmore storage",
+    "link": "https://a.co/d/8Q8xZaI",
+    "price": "119.99",
+    "category": "computer"
   }
 ]
