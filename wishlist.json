@@ -97,5 +97,14 @@
     "link": "https://www.lego.com/en-us/product/2-fast-2-furious-nissan-skyline-gt-r-r34-car-42210",
     "price": "139.99",
     "category": "misc"
+  },
+  {
+    "id": 1755646139163,
+    "image": "https://www.lego.com/cdn/cs/set/assets/blt96a11f71928f8103/72046_Prod_en-gb.png",
+    "date": "2025-08-19",
+    "description": "Game Boy lego set",
+    "link": "https://www.lego.com/en-us/product/game-boy-72046",
+    "price": "59.99",
+    "category": "misc"
   }
 ]
