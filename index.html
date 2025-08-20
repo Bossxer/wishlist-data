@@ -153,7 +153,6 @@
         .add-btn {
             background: linear-gradient(45deg, #4ecdc4, #1a936f);
             color: white;
-            display: none;
         }
 
         .add-btn:hover {
@@ -403,15 +402,15 @@
             color: white;
             margin-top: 8px;
         }
-        .cat-clothes { background-color: #6f42c1; }     /* purple */
-        .cat-shoes { background-color: #e83e8c; }       /* pink */
-        .cat-computer { background-color: #17a2b8; }    /* teal */
-        .cat-dma { background-color: #fd7e14; }         /* orange */
-        .cat-decor { background-color: #20c997; }       /* green */
-        .cat-furniture { background-color: #007bff; }   /* blue */
-        .cat-rabbit { background-color: #28a745; }      /* bright green */
-        .cat-personal { background-color: #ffc107; color: #000; }    /* yellow */
-        .cat-misc { background-color: #6c757d; }        /* gray */
+        .cat-clothes { background-color: #6f42c1; }
+        .cat-shoes { background-color: #e83e8c; }
+        .cat-computer { background-color: #17a2b8; }
+        .cat-dma { background-color: #fd7e14; }
+        .cat-decor { background-color: #20c997; }
+        .cat-furniture { background-color: #007bff; }
+        .cat-rabbit { background-color: #28a745; }
+        .cat-personal { background-color: #ffc107; color: #000; }
+        .cat-misc { background-color: #6c757d; }
 
         @media (max-width: 768px) {
             .wishlist-grid {
@@ -449,6 +448,9 @@
             </div>
             <div class="header-controls">
                 <div class="search-filter-container">
+                    <!-- New Sizes Button -->
+                    <button class="add-btn" id="sizesBtn"><i class="fas fa-ruler"></i> Sizes</button>
+                    
                     <input type="text" id="searchBar" placeholder="Search items...">
                     <select id="filterSelect">
                         <option value="all">All Categories</option>
@@ -548,6 +550,23 @@
             </div>
         </div>
 
+        <!-- Sizes Modal -->
+        <div class="modal" id="sizesModal">
+            <div class="modal-content">
+                <span class="close-btn" id="closeSizes">&times;</span>
+                <h2>Sizes</h2>
+                <ul style="list-style:none; padding-left:0; font-size:1.1rem; line-height:1.6;">
+                    <li><strong>Shoe:</strong> 11</li>
+                    <li><strong>Shirts:</strong> Men XL</li>
+                    <li><strong>Shirts Tall:</strong> Men M</li>
+                    <li><strong>Hoodie:</strong> Men XL</li>
+                    <li><strong>Waist/Leg Length:</strong> 32/30</li>
+                    <li><strong>Sweats:</strong> Men L</li>
+                    <li><strong>Socks:</strong> Men L</li>
+                </ul>
+            </div>
+        </div>
+
         <footer>
             <p>Birthday & Christmas Wishlist | Data stored on GitHub</p>
         </footer>
@@ -579,6 +598,11 @@
             const filterSelect = document.getElementById('filterSelect');
             const itemPriceInput = document.getElementById('itemPrice');
             const itemCategoryInput = document.getElementById('itemCategory');
+
+            // New DOM elements for sizes modal
+            const sizesBtn = document.getElementById('sizesBtn');
+            const sizesModal = document.getElementById('sizesModal');
+            const closeSizes = document.getElementById('closeSizes');
             
             // Check for saved theme preference
             if (localStorage.getItem('darkMode') === 'enabled') {
@@ -587,26 +611,6 @@
             
             // Initialize empty wishlist
             let wishlistItems = [];
-            
-            // Hardcoded GitHub settings with encrypted credentials
-            // In a real implementation, you would use a more secure encryption method
-            const githubSettings = {
-                username: 'Bossxer', // Replace with your GitHub username
-                token: 'jks_kGcFOu6Av8yW5oppwfA7qCUb9z6FfJ2fECaz', // Replace with your encrypted GitHub token
-                repo: 'wishlist-data' // Replace with your repository name
-            };
-            
-            // Simple Caesar cipher decryption function
-            function caesarDecrypt(str, shift = 3) {
-                return str.replace(/[a-zA-Z]/g, function(char) {
-                    const base = char <= 'Z' ? 65 : 97;
-                    return String.fromCharCode((char.charCodeAt(0) - base - shift + 26) % 26 + base);
-                });
-            }
-            
-            // Decrypt the GitHub token (this is just a simple example)
-            // In a real implementation, you would use a more secure method
-            githubSettings.token = caesarDecrypt(githubSettings.token);
             
             // Check if user is logged in (from sessionStorage)
             let isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
@@ -620,6 +624,10 @@
             loginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
             addBtn.addEventListener('click', () => addItemModal.style.display = 'flex');
             logoutBtn.addEventListener('click', logout);
+
+            // Sizes button events
+            sizesBtn.addEventListener('click', () => sizesModal.style.display = 'flex');
+            closeSizes.addEventListener('click', () => sizesModal.style.display = 'none');
             
             closeLogin.addEventListener('click', () => loginModal.style.display = 'none');
             closeAddItem.addEventListener('click', () => addItemModal.style.display = 'none');
@@ -672,7 +680,6 @@
                 if ((imageUrl || imageUpload.files.length > 0) && itemLink && description) {
                     let imageSrc = imageUrl;
                     
-                    // If uploading an image, convert to data URL
                     if (imageSource.value === 'upload' && imageUpload.files.length > 0) {
                         const file = imageUpload.files[0];
                         const reader = new FileReader();
@@ -697,6 +704,9 @@
                 if (event.target === addItemModal) {
                     addItemModal.style.display = 'none';
                 }
+                if (event.target === sizesModal) {
+                    sizesModal.style.display = 'none';
+                }
             });
             
             // Functions
@@ -719,7 +729,7 @@
                     addBtn.style.display = 'none';
                     logoutBtn.style.display = 'none';
                 }
-                renderWishlist(); // Re-render to show/hide delete buttons
+                renderWishlist();
             }
             
             function logout() {
@@ -730,9 +740,8 @@
             }
             
             function addItemToWishlist(imageSrc, itemLink, description, price, category) {
-                // Add new item to wishlist
                 const newItem = {
-                    id: Date.now(), // Use timestamp as ID
+                    id: Date.now(),
                     image: imageSrc,
                     date: new Date().toISOString().split('T')[0],
                     description: description,
@@ -744,7 +753,6 @@
                 wishlistItems.push(newItem);
                 renderWishlist();
                 
-                // Clear form and close modal
                 document.getElementById('imageUrl').value = '';
                 document.getElementById('itemLink').value = '';
                 document.getElementById('itemDescription').value = '';
@@ -754,7 +762,6 @@
                 imageUpload.value = '';
                 addItemModal.style.display = 'none';
                 
-                // Save to GitHub
                 saveToGitHub();
             }
             
@@ -772,7 +779,6 @@
                 
                 let filteredItems = wishlistItems;
 
-                // Apply search filter
                 const searchQuery = searchBar.value.toLowerCase();
                 if (searchQuery) {
                     filteredItems = filteredItems.filter(item =>
@@ -780,7 +786,6 @@
                     );
                 }
 
-                // Apply category filter
                 const selectedCategory = filterSelect.value;
                 if (selectedCategory !== 'all') {
                     filteredItems = filteredItems.filter(item => item.category === selectedCategory);
@@ -798,7 +803,7 @@
                     itemElement.innerHTML = `
                         ${isLoggedIn ? `<button class="delete-btn" onclick="deleteItem(${item.id})"><i class="fas fa-times"></i></button>` : ''}
                         <div class="item-image">
-                            <img src="${item.image}" alt="Wishlist item" onerror="this.src='https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'">
+                            <img src="${item.image}" alt="Wishlist item" onerror="this.src='https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80'">
                         </div>
                         <div class="item-details">
                             <div class="item-date">Added: ${item.date}</div>
@@ -826,44 +831,43 @@
                 }, 3000);
             }
             
-			async function loadFromGitHub() {
-			  try {
-				const response = await fetch("https://bossxer.github.io/wishlist-data/wishlist.json");
+            async function loadFromGitHub() {
+                try {
+                    const response = await fetch("https://bossxer.github.io/wishlist-data/wishlist.json");
 
-				if (response.ok) {
-				  const text = await response.text();
+                    if (response.ok) {
+                        const text = await response.text();
 
-				  if (!text.trim()) {
-					wishlistItems = [];
-					renderWishlist();
-					showStatus("Wishlist is empty. Add some items!", "success");
-					return;
-				  }
+                        if (!text.trim()) {
+                            wishlistItems = [];
+                            renderWishlist();
+                            showStatus("Wishlist is empty. Add some items!", "success");
+                            return;
+                        }
 
-				  try {
-					wishlistItems = JSON.parse(text);
-					renderWishlist();
-					showStatus("Wishlist loaded from GitHub Pages!", "success");
-				  } catch (err) {
-					console.error("JSON parse error:", err);
-					wishlistItems = [];
-					renderWishlist();
-					showStatus("Invalid wishlist.json format.", "error");
-				  }
-				} else if (response.status === 404) {
-				  wishlistItems = [];
-				  renderWishlist();
-				  showStatus("No wishlist.json found. Add items to create one.", "success");
-				} else {
-				  showStatus("GitHub Pages error: " + response.statusText, "error");
-				}
-			  } catch (error) {
-				showStatus("Network error: " + error.message, "error");
-			  }
-			}
+                        try {
+                            wishlistItems = JSON.parse(text);
+                            renderWishlist();
+                            showStatus("Wishlist loaded from GitHub Pages!", "success");
+                        } catch (err) {
+                            console.error("JSON parse error:", err);
+                            wishlistItems = [];
+                            renderWishlist();
+                            showStatus("Invalid wishlist.json format.", "error");
+                        }
+                    } else if (response.status === 404) {
+                        wishlistItems = [];
+                        renderWishlist();
+                        showStatus("No wishlist.json found. Add items to create one.", "success");
+                    } else {
+                        showStatus("GitHub Pages error: " + response.statusText, "error");
+                    }
+                } catch (error) {
+                    showStatus("Network error: " + error.message, "error");
+                }
+            }
 
-
-            // Make deleteItem function available globally
+            // Make deleteItem available globally
             window.deleteItem = deleteItem;
         });
     </script>
