@@ -574,50 +574,100 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const themeToggle = document.getElementById('themeToggle');
-            const loginBtn = document.getElementById('loginBtn');
-            const addBtn = document.getElementById('addBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const wishlistGrid = document.getElementById('wishlistGrid');
-            const loginModal = document.getElementById('loginModal');
-            const addItemModal = document.getElementById('addItemModal');
-            const closeLogin = document.getElementById('closeLogin');
-            const closeAddItem = document.getElementById('closeAddItem');
-            const submitLogin = document.getElementById('submitLogin');
-            const submitItem = document.getElementById('submitItem');
-            const imageSource = document.getElementById('imageSource');
-            const imageUrlGroup = document.getElementById('imageUrlGroup');
-            const imageUploadGroup = document.getElementById('imageUploadGroup');
-            const imageUpload = document.getElementById('imageUpload');
-            const imagePreview = document.getElementById('imagePreview');
-            const statusMessage = document.getElementById('statusMessage');
-            
-            // New DOM elements for search and filter
-            const searchBar = document.getElementById('searchBar');
-            const filterSelect = document.getElementById('filterSelect');
-            const itemPriceInput = document.getElementById('itemPrice');
-            const itemCategoryInput = document.getElementById('itemCategory');
+			const themeToggle = document.getElementById('themeToggle');
+			const loginBtn = document.getElementById('loginBtn');
+			const addBtn = document.getElementById('addBtn');
+			const logoutBtn = document.getElementById('logoutBtn');
+			const wishlistGrid = document.getElementById('wishlistGrid');
+			const loginModal = document.getElementById('loginModal');
+			const addItemModal = document.getElementById('addItemModal');
+			const closeLogin = document.getElementById('closeLogin');
+			const closeAddItem = document.getElementById('closeAddItem');
+			const submitLogin = document.getElementById('submitLogin');
+			const submitItem = document.getElementById('submitItem');
+			const imageSource = document.getElementById('imageSource');
+			const imageUrlGroup = document.getElementById('imageUrlGroup');
+			const imageUploadGroup = document.getElementById('imageUploadGroup');
+			const imageUpload = document.getElementById('imageUpload');
+			const imagePreview = document.getElementById('imagePreview');
+			const statusMessage = document.getElementById('statusMessage');
+			
+			const searchBar = document.getElementById('searchBar');
+			const filterSelect = document.getElementById('filterSelect');
+			const itemPriceInput = document.getElementById('itemPrice');
+			const itemCategoryInput = document.getElementById('itemCategory');
 
-            // New DOM elements for sizes modal
-            const sizesBtn = document.getElementById('sizesBtn');
-            const sizesModal = document.getElementById('sizesModal');
-            const closeSizes = document.getElementById('closeSizes');
-            
-            // Check for saved theme preference
-            if (localStorage.getItem('darkMode') === 'enabled') {
-                document.body.classList.add('dark-mode');
-            }
-            
-            // Initialize empty wishlist
-            let wishlistItems = [];
-            
-            // Check if user is logged in (from sessionStorage)
-            let isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-            updateUI();
-            
-            // Try to load data from GitHub
-            loadFromGitHub();
+			const sizesBtn = document.getElementById('sizesBtn');
+			const sizesModal = document.getElementById('sizesModal');
+			const closeSizes = document.getElementById('closeSizes');
+			
+			if (localStorage.getItem('darkMode') === 'enabled') {
+				document.body.classList.add('dark-mode');
+			}
+
+			let wishlistItems = [];
+			let isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+			updateUI();
+
+			// 🔒 Dropbox token + path (base64)
+			const Q1 = [
+				"c2wudS5BRjdQX2E2bHFxT0ZoSy1OWlZUSEpqdmJiZFlYejRoVzIzbF90UnlyUlhWRkw1OW15dEdGcW9USGhOZHhlNHRBNTlIcDE0X2l0RS1JdnpWOXJYaTlmcGZRUzhTWV9xRVdtalJpZE1sVlIzOXdPVVpqWXVVV0MtWk9kUjdzZEVMcTNLVVhCZXo0WTlja2FJcDcxZGt5MXBRT0tzeFlhNmFtVmRLQ1ppc0E0QU8zbWdxcjctUlVlZW9KZGtaaFc2cjhyUzNzZ2VYOGkwOFJqaWxfb3BuZS1hYXRBZzM4cGlZakp5bDdXYy1lV3FuVS1BYWRhTkhxWTRuUTY2eThVVmFIQlhXcldEUUptX0tXbk5aM3VXeVdVVTJrWHFDV21lN1NzR01EMVNTWUJzM2FORFczZGxtQzF5YVgyS2c5Yl94VHhfS3NwZ0pkNkYxa2VMX000ZWRyV2ZFa3ZfTlNFYldwcEFJUjU5SnJtRGhLUXoyUTduVnlkLTBUVXJmQ2hfMXc4Z3ZUbUlkZkZqRU1vRjV2dFAtZm9TUmQ2cDkwZWtWeTJPRHZrd0Jlbm94cF8zbElkbDhzVEF0bC1UdS1NNDFBOXRzN2dzY0Nab3dqV0xRWlJJWnliVWszNXVNNzBYSUVLb0d6MEc5clVnaFhlY0VIV0oybWdPcjVPXzd3VjVMeW5yM0s0Q2lhSnpsb0tIX3dDTGpzTlNjYXhuNUVrR2VwM1FHUThRQ2s1Wk5Xdmt2VWE3Vlk1TFhDbVhaZjFSQTd3b3pvT09XSWl6dnlZX1F0RUhDOFRGMjN3bHY0ekRGem1IclN3SnlDVVByb0M4S29TOXYyUWdSSkxjc19NMlI2dW5OdzFyUWNmS3pzRkxSZGpSYXN0NmJDdUZoZGx1blFFaVg4eEVHQUJjdllSSHQ4VmRvbjJvaG5qNkhwT2E4TFdwQkpDWG9iRjY1VlV4NXdHQXZNd0MyVGpuaEdrenFkTHdTWFYtanlhd1BIdlQ3WkUyUlg4RGhja096cnhWUDFLVDhKSGNuTGlCSjQxZkFyODdhV2ExVWQ4MW5GdnhMVl9JRGhRMmQ4emJVNGNBTWZYSUpTT1EtVi1PTEFMTHhBNUlNVDMxeTVmY1ViQWQ4SDNfRTFoZDVKYWo0Rk1ReDFFb3NFZjRMSXp3a2t3T1p3cEVDLXpTNzRUU21pNklGVzFZdXNYWTRpZVhQUzI2ZmE0SE93QXU2N09WQUl6V1ZDRjJ6MV90TnNsZGxCWVhsYW1MelhUZFpjSmZSSS13c1NjeEhtaG5zYkdpRS1DT0syVUJnNWIzTHR4TG5iamFRMkl3bTZnbENCbFYzdFNCNnhraVNDeU1vNFQ3QjhxTmcxdXlHamZndEV5NXhWVWp1dFZuT0M4NjNDWVFOWGQ4OVdGY052dWUwdTR1cUdrd2JMcDkwZDhOdW8tYW8tQmFYMEQ2Sk5Hbm9ySW8zeDZsRG9wRlIta3d5MTZrTUh3UTh1YjVvYTlrU1RIN3hIb3hrdS1WR3NUNGMxYVNKNGNieUQ1bURBX2hCUUs1R1laeE1Obkoxb016bnktQ1R2M1ZldXFpdlk2NG1EcmlwSW5zVEJZNzdVR1o4bGxxc1djdjBfU25WaVpiZXN4VWVjcDRrZUp0Z0U5NHdQaHhaZmxHUG5TWGt4LUJUUjE0RXdSbG1zTTNrcGdKZlh2bE9lRkpZdzgzR05nSDRoQjB2Y2VUMHlmOVFCWGdSSQ==",
+				"L3dpc2hsaXN0Lmpzb24=" // "/wishlist.json"
+			];
+			function ZxQp(v){ return atob(v); }
+			function getToken(){ return ZxQp(Q1[0]); }
+			function getPath(){ return ZxQp(Q1[1]); }
+
+			async function loadFromDropbox() {
+				try {
+					const res = await fetch("https://content.dropboxapi.com/2/files/download", {
+						method: "POST",
+						headers: {
+							"Authorization": "Bearer " + getToken(),
+							"Dropbox-API-Arg": JSON.stringify({ path: getPath() })
+						}
+					});
+					if (!res.ok) throw new Error("Dropbox error " + res.status);
+					const text = await res.text();
+					wishlistItems = text.trim() ? JSON.parse(text) : [];
+					renderWishlist();
+					showStatus("Wishlist loaded from Dropbox!", "success");
+				} catch (e) {
+					wishlistItems = [];
+					renderWishlist();
+					showStatus("Error loading: " + e.message, "error");
+				}
+			}
+
+			async function saveToDropbox() {
+				try {
+					await fetch("https://content.dropboxapi.com/2/files/upload", {
+						method: "POST",
+						headers: {
+							"Authorization": "Bearer " + getToken(),
+							"Dropbox-API-Arg": JSON.stringify({ path: getPath(), mode: "overwrite", mute: true }),
+							"Content-Type": "application/octet-stream"
+						},
+						body: JSON.stringify(wishlistItems)
+					});
+					showStatus("Saved to Dropbox!", "success");
+				} catch (e) {
+					showStatus("Save error: " + e.message, "error");
+				}
+			}
+
+			// Replace delete function to always save to Dropbox
+			window.deleteItem = function(id) {
+				if (confirm("Are you sure you want to delete this item?")) {
+					wishlistItems = wishlistItems.filter(item => item.id !== id);
+					renderWishlist();
+					saveToDropbox();
+					showStatus("Item deleted successfully!", "success");
+				}
+			};
+
+			// Initial load
+			loadFromDropbox();
             
             // Event Listeners
             themeToggle.addEventListener('click', toggleDarkMode);
@@ -762,14 +812,14 @@
                 imageUpload.value = '';
                 addItemModal.style.display = 'none';
                 
-                saveToGitHub();
+                saveToDropbox();
             }
             
             function deleteItem(id) {
                 if (confirm("Are you sure you want to delete this item?")) {
                     wishlistItems = wishlistItems.filter(item => item.id !== id);
                     renderWishlist();
-                    saveToGitHub();
+                    saveToDropbox();
                     showStatus('Item deleted successfully!', 'success');
                 }
             }
@@ -830,45 +880,6 @@
                     statusMessage.style.display = 'none';
                 }, 3000);
             }
-            
-            async function loadFromGitHub() {
-                try {
-                    const response = await fetch("https://bossxer.github.io/wishlist-data/wishlist.json");
-
-                    if (response.ok) {
-                        const text = await response.text();
-
-                        if (!text.trim()) {
-                            wishlistItems = [];
-                            renderWishlist();
-                            showStatus("Wishlist is empty. Add some items!", "success");
-                            return;
-                        }
-
-                        try {
-                            wishlistItems = JSON.parse(text);
-                            renderWishlist();
-                            showStatus("Wishlist loaded from GitHub Pages!", "success");
-                        } catch (err) {
-                            console.error("JSON parse error:", err);
-                            wishlistItems = [];
-                            renderWishlist();
-                            showStatus("Invalid wishlist.json format.", "error");
-                        }
-                    } else if (response.status === 404) {
-                        wishlistItems = [];
-                        renderWishlist();
-                        showStatus("No wishlist.json found. Add items to create one.", "success");
-                    } else {
-                        showStatus("GitHub Pages error: " + response.statusText, "error");
-                    }
-                } catch (error) {
-                    showStatus("Network error: " + error.message, "error");
-                }
-            }
-
-            // Make deleteItem available globally
-            window.deleteItem = deleteItem;
         });
     </script>
 </body>
