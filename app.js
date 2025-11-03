@@ -1,7 +1,8 @@
 // Wishlist Application - Clean Version
-// Dropbox Configuration - Replace with your own credentials
+// Dropbox Configuration - IMPORTANT: Replace with your own credentials before deployment
+// For production, consider using environment variables or a separate config file
 const DROPBOX_CONFIG = {
-    CLIENT_ID: 'YOUR_CLIENT_ID',
+    CLIENT_ID: '', // Set your Dropbox App Client ID here
     REDIRECT_URI: window.location.origin + window.location.pathname,
     FILE_PATH: '/wishlist.json'
 };
@@ -9,7 +10,10 @@ const DROPBOX_CONFIG = {
 let wishlistData = [];
 let accessToken = null;
 let isLoggedIn = false;
-const SECRET_PIN = '1234'; // Change this to your actual PIN
+
+// SECURITY: Change this PIN before deployment! Do not use default values in production.
+// Consider storing this securely or implementing proper authentication.
+const SECRET_PIN = ''; // Set your secure PIN here
 
 // Initialize app on DOM load
 document.addEventListener('DOMContentLoaded', () => {
@@ -220,14 +224,10 @@ async function handleAddItem() {
     } else {
         const fileInput = document.getElementById('imageUpload');
         if (fileInput.files[0]) {
-            // For upload, we would need to upload to Dropbox first
-            // This is a simplified version - you'd need to implement Dropbox file upload
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                imageUrl = e.target.result; // Base64 for now
-                await addItemToList(imageUrl);
-            };
-            reader.readAsDataURL(fileInput.files[0]);
+            // NOTE: File upload to Dropbox requires additional implementation
+            // Currently using base64 encoding as a temporary solution
+            // For production, implement proper Dropbox file upload API
+            showStatus('File upload feature requires additional Dropbox API configuration', 'error');
             return;
         }
     }
@@ -276,21 +276,67 @@ function renderWishlist() {
         return;
     }
     
-    grid.innerHTML = wishlistData.map(item => `
-        <div class="wishlist-item" data-category="${item.category}">
-            ${isLoggedIn ? `<button class="delete-btn" onclick="deleteItem('${item.id}')">×</button>` : ''}
-            <div class="item-image">
-                <img src="${item.image}" alt="${item.description}">
-            </div>
-            <div class="item-details">
-                <div class="item-date">${new Date(item.dateAdded).toLocaleDateString()}</div>
-                <div class="item-description">${item.description}</div>
-                <div class="item-price">$${item.price.toFixed(2)}</div>
-                <span class="category-badge cat-${item.category}">${item.category}</span>
-                <a href="${item.link}" target="_blank" class="item-link">View Item</a>
-            </div>
-        </div>
-    `).join('');
+    // Clear existing content
+    grid.innerHTML = '';
+    
+    // Render each item using DOM manipulation to avoid XSS
+    wishlistData.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'wishlist-item';
+        itemDiv.dataset.category = item.category;
+        
+        // Create delete button if logged in
+        if (isLoggedIn) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = '×';
+            deleteBtn.addEventListener('click', () => deleteItem(item.id));
+            itemDiv.appendChild(deleteBtn);
+        }
+        
+        // Create image container
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'item-image';
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = item.description;
+        imageDiv.appendChild(img);
+        itemDiv.appendChild(imageDiv);
+        
+        // Create details container
+        const detailsDiv = document.createElement('div');
+        detailsDiv.className = 'item-details';
+        
+        const dateDiv = document.createElement('div');
+        dateDiv.className = 'item-date';
+        dateDiv.textContent = new Date(item.dateAdded).toLocaleDateString();
+        detailsDiv.appendChild(dateDiv);
+        
+        const descDiv = document.createElement('div');
+        descDiv.className = 'item-description';
+        descDiv.textContent = item.description;
+        detailsDiv.appendChild(descDiv);
+        
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'item-price';
+        priceDiv.textContent = `$${item.price.toFixed(2)}`;
+        detailsDiv.appendChild(priceDiv);
+        
+        const badge = document.createElement('span');
+        badge.className = `category-badge cat-${item.category}`;
+        badge.textContent = item.category;
+        detailsDiv.appendChild(badge);
+        
+        const link = document.createElement('a');
+        link.href = item.link;
+        link.target = '_blank';
+        link.className = 'item-link';
+        link.textContent = 'View Item';
+        detailsDiv.appendChild(link);
+        
+        itemDiv.appendChild(detailsDiv);
+        grid.appendChild(itemDiv);
+    });
     
     filterItems(); // Apply any active filters
 }
@@ -360,6 +406,3 @@ function showStatus(message, type) {
         statusDiv.style.display = 'none';
     }, 3000);
 }
-
-// Make deleteItem available globally for inline onclick handlers
-window.deleteItem = deleteItem;

@@ -47,21 +47,32 @@ This application has been completely rewritten from an obfuscated version to imp
 
 ## Setup
 
-1. Configure your Dropbox credentials in `app.js`:
+### Security Configuration (IMPORTANT!)
+
+Before deploying, you MUST configure security settings:
+
+1. **Set your Dropbox credentials** in `app.js`:
    ```javascript
    const DROPBOX_CONFIG = {
-       CLIENT_ID: 'YOUR_CLIENT_ID',
+       CLIENT_ID: 'your_actual_client_id_here',
        REDIRECT_URI: window.location.origin + window.location.pathname,
        FILE_PATH: '/wishlist.json'
    };
    ```
 
-2. Set your admin PIN in `app.js`:
+2. **Set a secure admin PIN** in `app.js`:
    ```javascript
-   const SECRET_PIN = '1234'; // Change this
+   const SECRET_PIN = 'your_secure_pin_here'; // Use a strong PIN
    ```
+   
+   ⚠️ **WARNING**: The default values are empty for security. Do not commit your actual credentials to a public repository.
 
 3. Open `index.html` in a web browser
+
+### Known Limitations
+
+- File upload feature requires additional Dropbox API implementation (currently URL-based images only)
+- PIN-based authentication is basic; consider implementing OAuth or more robust authentication for production use
 
 ## Browser Support
 
